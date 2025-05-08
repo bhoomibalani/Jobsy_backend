@@ -21,7 +21,7 @@ password:{
     required:[true,'Password is required']
 },
 location:{
-    type:string,
+    type:String,
     default:'Mumbai'
 }
  },{timestamps:true}
