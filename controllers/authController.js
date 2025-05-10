@@ -18,7 +18,7 @@ export const registerController = async (req, res, next) => {
 
 
 
-        const existingUser = await userModel.findOne({ email })
+        const existingUser = await userModel.findOne({ email }).select("+password")
         if (existingUser) {
             next('email already register')
         }
@@ -34,9 +34,9 @@ export const registerController = async (req, res, next) => {
             message: 'user created successfully',
             user:{
                 name:user.name,
-                lastname:user.laastname,
+                lastname:user.lastname,
                 email:user.email,
-                locaton:user.location,
+                location:user.location,
             },
             token
         })
@@ -46,3 +46,32 @@ export const registerController = async (req, res, next) => {
     }
 };
 
+
+export const loginController=async(req,res)=>{
+    const {email,password}=req.body;
+    //validation
+    if(!email||!password){
+        next('Please provide all fields')
+    }
+
+    //find user by email
+    const user= await userModel.findOne({email:email})
+    if(!user){
+        next('invalid username or password')
+    }
+    //comapre password
+    const isMatch =await user.comparePassword(password)
+    if(!isMatch){
+        next('nvalid username or password')
+    }
+
+    user.password=undefined;
+
+    const token = user.createJWT()
+    res.status(200).send({
+        success:true,
+        message:'Login Successfully',
+        user,
+        token,
+    })
+};
