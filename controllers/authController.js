@@ -15,9 +15,7 @@ export const registerController = async (req, res, next) => {
         if (!password) {
             next('enter password')
         }
-
-
-
+        
         const existingUser = await userModel.findOne({ email }).select("+password")
         if (existingUser) {
             next('email already register')
